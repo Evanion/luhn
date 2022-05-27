@@ -39,13 +39,16 @@ test('you can globally set the class to be case sensitive', (t) => {
     static readonly sensitive = true;
   }
 
-  t.is(SensitiveLuhn.generate('justARandomStringOfLetters').checksum, 'i');
-  t.true(SensitiveLuhn.validate('justARandomStringOfLettersi').isValid);
+  t.is(SensitiveLuhn.generate('justARandomStringOfLetters').checksum, 'J');
+  t.true(SensitiveLuhn.validate('justARandomStringOfLettersJ').isValid);
 });
 
 test('you can change the dictionary', (t) => {
   class CustomLuhn extends Luhn {
-    static readonly dictionary = 'abcdefghijklmnopqrstuvwxyz';
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    static dictionary(_sensitive: boolean) {
+      return 'abcdefghijklmnopqrstuvwxyz';
+    }
   }
 
   t.is(Luhn.generate('justARandomStringOfLetters123').checksum, 'k');
@@ -57,7 +60,10 @@ test('you can change the dictionary', (t) => {
 
 test('should enforce an even length of the dictionary', (t) => {
   class TestLuhn extends Luhn {
-    static readonly dictionary = 'abcfo';
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    static dictionary(_sensitive: boolean) {
+      return 'abcfo';
+    }
   }
 
   t.throws(() => TestLuhn.generate('ab'), {
