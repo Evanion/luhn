@@ -3,19 +3,23 @@ import test from 'ava';
 import { Luhn } from './luhn';
 
 test('Generate', (t) => {
-  t.is(Luhn.generate('justarandomstringofletters'), 'k');
+  t.is(Luhn.generate('justarandomstringofletters').checksum, 'k');
 });
 
 test('Generate filters out characters not in the dictionary', (t) => {
-  t.is(Luhn.generate('just-a-random-string-of-letters'), 'k');
+  t.deepEqual(Luhn.generate('just-a-random-string-of-letters'), {
+    phrase: 'justarandomstringofletters',
+    checksum: 'k',
+  });
 });
 
 test('Generate is not case sensitive', (t) => {
-  t.is(Luhn.generate('justARandomStringOfLetters'), 'k');
+  t.is(Luhn.generate('justARandomStringOfLetters').checksum, 'k');
 });
 
 test('Generate can be made case sensitive', (t) => {
-  t.not(Luhn.generate('justARandomStringOfLetters', true), 'k');
+  t.not(Luhn.generate('JUSTARANDOMSTRINGOFLETTERS', true).checksum, 'k');
+  t.is(Luhn.generate('JUSTARANDOMSTRINGOFLETTERS', true).checksum, '0');
 });
 
 test('validate', (t) => {
@@ -23,11 +27,12 @@ test('validate', (t) => {
 });
 
 test('Validate is not case sensitive', (t) => {
-  t.true(Luhn.validate('justARandomStringOfLettersk'));
+  t.true(Luhn.validate('JUSTARANDOMSTRINGOFLETTERSK'));
 });
 
 test('Validate can be made case sensitive', (t) => {
-  t.false(Luhn.validate('justARandomStringOfLettersk', true));
+  t.false(Luhn.validate('JUSTARANDOMSTRINGOFLETTERSk', true));
+  t.true(Luhn.validate('JUSTARANDOMSTRINGOFLETTERS0', true));
 });
 
 test('you can globally set the class to be case sensitive', (t) => {
@@ -44,8 +49,8 @@ test('you can change the dictionary', (t) => {
     static readonly dictionary = 'abcdefghijklmnopqrstuvwxyz';
   }
 
-  t.not(CustomLuhn.generate('justARandomStringOfLetters'), 'k');
-  t.is(CustomLuhn.generate('justARandomStringOfLetters'), 'a');
-  t.false(CustomLuhn.validate('justARandomStringOfLettersk'));
-  t.true(CustomLuhn.validate('justARandomStringOfLettersa'));
+  t.is(CustomLuhn.generate('justARandomStringOfLetters123').checksum, 'k');
+  t.not(CustomLuhn.generate('justARandomStringOfLetters123').checksum, 'a');
+  t.true(CustomLuhn.validate('justARandomStringOfLettersk'));
+  t.false(CustomLuhn.validate('justARandomStringOfLettersa'));
 });

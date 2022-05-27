@@ -1,3 +1,18 @@
+/**
+ * @typedef {Object} GenerateResult
+ * @property {String} phrase The filtered string
+ * @property {String} checksum The generated checksum character
+ */
+
+/**
+ * @typedef {Object} ValidateResult
+ * @property {String} phrase The filtered string
+ * @property {Boolean} isValid True if the string is valid
+ */
+
+/**
+ * Lets you easily generate and validate checksum values based on the Luhn mod-N algorithm
+ */
 export class Luhn {
   /**
    * Toggle if the class should be case sensitive
@@ -16,25 +31,29 @@ export class Luhn {
    * Generates a check character for the input string.
    * @param {String} input The string that should have a check character
    * @param {Boolean} sensitive Toggle if the function should be case-sensitive or not.
-   * @returns {String} The check character.
+   * @returns {GenerateResult} The filtered string and checksum character
    *
    * @example
-   * Luhn.generate('foo') // -> '5'
-   * Luhn.generate('FoO') // -> '5'
-   * Luhn.generate('FoO', true) // -> 'n'
+   * Luhn.generate('foo') // -> {phrase: 'foo', checksum: '5'}
+   * Luhn.generate('FoO') // -> {phrase: 'foo', checksum: '5'}
+   * Luhn.generate('FoO', true) // -> {phrase: 'FoO', checksum: 'n'}
    */
-  public static generate(input: string, sensitive?: boolean): string {
-    const n = this.dictionary.length;
-
-    const sum = (sensitive || this.sensitive ? input : input.toLowerCase())
+  public static generate(input: string, sensitive?: boolean) {
+    const n = this.getN();
+    const filteredArr = (
+      sensitive || this.sensitive ? input : input.toLowerCase()
+    )
       .split('')
-      .filter(this.filterValid)
-      .reverse()
-      .reduce(this.reduce(2), 0);
+      .filter(this.filterValid);
+
+    const sum = [...filteredArr].reverse().reduce(this.reduce(2), 0);
 
     const remainder = sum % n;
     const checkCodePoint = (n - remainder) % n;
-    return this.index2char(checkCodePoint);
+    return {
+      phrase: filteredArr.join(''),
+      checksum: this.index2char(checkCodePoint),
+    };
   }
 
   /**
@@ -43,20 +62,27 @@ export class Luhn {
    * @param {String} input The string that you want to check,
    * including the check character in the end of the string
    * @param {Boolean} sensitive Toggle if the function should be case-sensitive or not.
-   * @returns {Boolean} returns true if the check character match.
+   * @returns {ValidateResult} returns if the string is valid or not.
    * @example
-   * Luhn.validate('foo5') // -> true
-   * Luhn.validate('FoO5') // -> true
-   * Luhn.validate('FoO5', true) // -> false
+   * Luhn.validate('foo5') // -> {phrase: 'foo5', isValid: true}
+   * Luhn.validate('FoO5') // -> {phrase: 'foo5', isValid: true}
+   * Luhn.validate('FoOö5') // -> {phrase: 'foo5', isValid: true}
+   * Luhn.validate('FoO5', true) // -> {phrase: 'FoO5', isValid: false}
    */
   public static validate(input: string, sensitive?: boolean) {
-    const sum = (sensitive || this.sensitive ? input : input.toLowerCase())
+    const n = this.getN();
+    const filteredArr = (
+      sensitive || this.sensitive ? input : input.toLowerCase()
+    )
       .split('')
-      .filter(this.filterValid)
-      .reverse()
-      .reduce(this.reduce(), 0);
+      .filter(this.filterValid);
 
-    return !(sum % this.dictionary.length);
+    const sum = [...filteredArr].reverse().reduce(this.reduce(), 0);
+
+    return {
+      phrase: filteredArr.join(''),
+      isValid: !(sum % n),
+    };
   }
 
   /**
@@ -108,4 +134,15 @@ export class Luhn {
         (addend % this.dictionary.length);
       return (sum += addend);
     };
+
+  /**
+   * Checks that the dictionary complies with the requirements,
+   * and returns the N value.
+   * @returns {Number} Length of the dictionary
+   */
+  private static readonly getN = () => {
+    if (this.dictionary.length % 2 !== 0)
+      throw new Error('Dictionary length must be even');
+    return this.dictionary.length;
+  };
 }
