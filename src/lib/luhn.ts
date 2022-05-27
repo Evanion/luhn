@@ -18,13 +18,13 @@ export class Luhn {
   /**
    * Toggle if the class should be case sensitive
    */
-  static readonly sensitive: boolean = false;
+  protected static sensitive = false;
 
   /**
    * Dictionary that contains all valid characters.
    * Override it if you want to use additional/less characters
    */
-  public static readonly dictionary: string = this.sensitive
+  protected static dictionary: string = this.sensitive
     ? '0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz'
     : '0123456789abcdefghijklmnopqrstuvwxyz';
 
@@ -40,20 +40,22 @@ export class Luhn {
    * Luhn.generate('FoO', true) // -> {phrase: 'FoO', checksum: 'n'}
    */
   public static generate(input: string, sensitive?: boolean) {
-    const n = this.getN();
+    const n = this.getN(this.dictionary);
     const filteredArr = (
       sensitive || this.sensitive ? input : input.toLowerCase()
     )
       .split('')
-      .filter(this.filterValid);
+      .filter(this.filterValid(this.dictionary));
 
-    const sum = [...filteredArr].reverse().reduce(this.reduce(2), 0);
+    const sum = [...filteredArr]
+      .reverse()
+      .reduce(this.reduce(2, this.dictionary), 0);
 
     const remainder = sum % n;
     const checkCodePoint = (n - remainder) % n;
     return {
       phrase: filteredArr.join(''),
-      checksum: this.index2char(checkCodePoint),
+      checksum: this.index2char(checkCodePoint, this.dictionary),
     };
   }
 
@@ -71,14 +73,16 @@ export class Luhn {
    * Luhn.validate('FoO5', true) // -> {phrase: 'FoO5', isValid: false}
    */
   public static validate(input: string, sensitive?: boolean) {
-    const n = this.getN();
+    const n = this.getN(this.dictionary);
     const filteredArr = (
       sensitive || this.sensitive ? input : input.toLowerCase()
     )
       .split('')
-      .filter(this.filterValid);
+      .filter(this.filterValid(this.dictionary));
 
-    const sum = [...filteredArr].reverse().reduce(this.reduce(), 0);
+    const sum = [...filteredArr]
+      .reverse()
+      .reduce(this.reduce(1, this.dictionary), 0);
 
     return {
       phrase: filteredArr.join(''),
@@ -91,32 +95,38 @@ export class Luhn {
    * @param {String} character The character you want to find in the dictionary
    * @returns {Number} the index of the character in the dictionary
    */
-  private static readonly char2index = (character: string) =>
-    this.dictionary.indexOf(character);
+  protected static readonly char2index = (
+    character: string,
+    dictionary = this.dictionary
+  ) => dictionary.indexOf(character);
 
   /**
    * Looks up a character in the dictionary based on it's index
    * @param {Number} codePoint The index you want to find in the dictionary
    * @returns {String} The character in the dictionary, at the given index
    */
-  private static readonly index2char = (codePoint: number) =>
-    this.dictionary.charAt(codePoint);
+  protected static readonly index2char = (
+    codePoint: number,
+    dictionary = this.dictionary
+  ) => dictionary.charAt(codePoint);
 
   /**
    * Filter out any characters that are not in the dictionary.
    * @param {String} character The character you want to check
    * @returns {Boolean} True if the character is in the dictionary
    */
-  private static readonly filterValid = (character: string) =>
-    this.dictionary.indexOf(character) !== -1;
+  protected static readonly filterValid =
+    (dictionary = this.dictionary) =>
+    (character: string) =>
+      dictionary.indexOf(character) !== -1;
 
   /**
    * Higher-order function that returns a reducer that calculates the checksum
    * @param {Number}factor
    * @returns {reduce~reducer}
    */
-  private static readonly reduce =
-    (factor = 1) =>
+  protected static readonly reduce =
+    (factor = 1, dictionary = this.dictionary) =>
     /**
      * Reducer function that is applied on an array of
      * characters in order to calculate a checksum.
@@ -125,14 +135,13 @@ export class Luhn {
      * @returns {Number} the checksum
      */
     (sum: number, current: string) => {
-      const codePoint = this.char2index(current);
+      const codePoint = this.char2index(current, dictionary);
       let addend = factor * codePoint;
 
       factor = factor == 2 ? 1 : 2;
 
       addend =
-        Math.floor(addend / this.dictionary.length) +
-        (addend % this.dictionary.length);
+        Math.floor(addend / dictionary.length) + (addend % dictionary.length);
       return (sum += addend);
     };
 
@@ -141,9 +150,11 @@ export class Luhn {
    * and returns the N value.
    * @returns {Number} Length of the dictionary
    */
-  private static readonly getN = () => {
-    if (this.dictionary.length % 2 !== 0)
-      throw new InvalidDictionaryError(this.dictionary);
-    return this.dictionary.length;
+  protected static readonly getN = (dictionary = this.dictionary) => {
+    if (dictionary.length % 2 !== 0) {
+      throw new InvalidDictionaryError(dictionary);
+    }
+
+    return dictionary.length;
   };
 }

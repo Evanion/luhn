@@ -3,6 +3,8 @@
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/master/cspell.schema.json",
   "language": "en",
   "words": [
+    "abcfo",
+    "abcfoo",
     "abfor",
     "afor",
     "bitauth",
@@ -25,6 +27,7 @@
     "justarandomstringofletters",
     "justarandomstringoflettersk",
     "Lettersa",
+    "Lettersi",
     "libauth",
     "Luhn",
     "mkdir",

@@ -19,7 +19,6 @@ test('Generate is not case sensitive', (t) => {
 });
 
 test('Generate can be made case sensitive', (t) => {
-  t.not(Luhn.generate('JUSTARANDOMSTRINGOFLETTERS', true).checksum, 'k');
   t.is(Luhn.generate('JUSTARANDOMSTRINGOFLETTERS', true).checksum, '0');
 });
 
@@ -32,7 +31,6 @@ test('Validate is not case sensitive', (t) => {
 });
 
 test('Validate can be made case sensitive', (t) => {
-  t.false(Luhn.validate('JUSTARANDOMSTRINGOFLETTERSk', true).isValid);
   t.true(Luhn.validate('JUSTARANDOMSTRINGOFLETTERS0', true).isValid);
 });
 
@@ -41,8 +39,8 @@ test('you can globally set the class to be case sensitive', (t) => {
     static readonly sensitive = true;
   }
 
-  t.not(SensitiveLuhn.generate('justARandomStringOfLetters').checksum, '0');
-  t.false(SensitiveLuhn.validate('justARandomStringOfLetters').isValid);
+  t.is(SensitiveLuhn.generate('justARandomStringOfLetters').checksum, 'i');
+  t.true(SensitiveLuhn.validate('justARandomStringOfLettersi').isValid);
 });
 
 test('you can change the dictionary', (t) => {
@@ -50,18 +48,19 @@ test('you can change the dictionary', (t) => {
     static readonly dictionary = 'abcdefghijklmnopqrstuvwxyz';
   }
 
-  t.is(CustomLuhn.generate('justARandomStringOfLetters123').checksum, 'k');
-  t.not(CustomLuhn.generate('justARandomStringOfLetters123').checksum, 'a');
-  t.true(CustomLuhn.validate('justARandomStringOfLettersk').isValid);
-  t.false(CustomLuhn.validate('justARandomStringOfLettersa').isValid);
+  t.is(Luhn.generate('justARandomStringOfLetters123').checksum, 'k');
+  t.is(CustomLuhn.generate('justARandomStringOfLetters123').checksum, 'v');
+
+  t.true(CustomLuhn.validate('justARandomStringOfLetters123v').isValid);
+  t.false(CustomLuhn.validate('justARandomStringOfLettersk').isValid);
 });
 
 test('should enforce an even length of the dictionary', (t) => {
   class TestLuhn extends Luhn {
-    static readonly dictionary = 'abc';
+    static readonly dictionary = 'abcfo';
   }
 
-  t.throws(() => TestLuhn.validate('ab'), {
+  t.throws(() => TestLuhn.generate('ab'), {
     instanceOf: InvalidDictionaryError,
   });
 });
