@@ -129,7 +129,7 @@ export class Luhn {
    * @returns {reduce~reducer}
    */
   protected static readonly reduce =
-    (factor = 1, dictionary: string) =>
+    (factor: 1 | 2, dictionary: string) =>
     /**
      * Reducer function that is applied on an array of
      * characters in order to calculate a checksum.
