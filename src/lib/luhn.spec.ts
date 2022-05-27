@@ -23,16 +23,16 @@ test('Generate can be made case sensitive', (t) => {
 });
 
 test('validate', (t) => {
-  t.true(Luhn.validate('justarandomstringoflettersk'));
+  t.true(Luhn.validate('justarandomstringoflettersk').isValid);
 });
 
 test('Validate is not case sensitive', (t) => {
-  t.true(Luhn.validate('JUSTARANDOMSTRINGOFLETTERSK'));
+  t.true(Luhn.validate('JUSTARANDOMSTRINGOFLETTERSK').isValid);
 });
 
 test('Validate can be made case sensitive', (t) => {
-  t.false(Luhn.validate('JUSTARANDOMSTRINGOFLETTERSk', true));
-  t.true(Luhn.validate('JUSTARANDOMSTRINGOFLETTERS0', true));
+  t.false(Luhn.validate('JUSTARANDOMSTRINGOFLETTERSk', true).isValid);
+  t.true(Luhn.validate('JUSTARANDOMSTRINGOFLETTERS0', true).isValid);
 });
 
 test('you can globally set the class to be case sensitive', (t) => {
@@ -40,8 +40,8 @@ test('you can globally set the class to be case sensitive', (t) => {
     static readonly sensitive = true;
   }
 
-  t.not(SensitiveLuhn.generate('justARandomStringOfLetters'), '0');
-  t.false(SensitiveLuhn.validate('justARandomStringOfLetters'));
+  t.not(SensitiveLuhn.generate('justARandomStringOfLetters').checksum, '0');
+  t.false(SensitiveLuhn.validate('justARandomStringOfLetters').isValid);
 });
 
 test('you can change the dictionary', (t) => {
@@ -51,6 +51,6 @@ test('you can change the dictionary', (t) => {
 
   t.is(CustomLuhn.generate('justARandomStringOfLetters123').checksum, 'k');
   t.not(CustomLuhn.generate('justARandomStringOfLetters123').checksum, 'a');
-  t.true(CustomLuhn.validate('justARandomStringOfLettersk'));
-  t.false(CustomLuhn.validate('justARandomStringOfLettersa'));
+  t.true(CustomLuhn.validate('justARandomStringOfLettersk').isValid);
+  t.false(CustomLuhn.validate('justARandomStringOfLettersa').isValid);
 });
