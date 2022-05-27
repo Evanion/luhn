@@ -1,3 +1,4 @@
+import { InvalidDictionaryError } from './exceptions';
 /**
  * @typedef {Object} GenerateResult
  * @property {String} phrase The filtered string
@@ -142,7 +143,7 @@ export class Luhn {
    */
   private static readonly getN = () => {
     if (this.dictionary.length % 2 !== 0)
-      throw new Error('Dictionary length must be even');
+      throw new InvalidDictionaryError(this.dictionary);
     return this.dictionary.length;
   };
 }

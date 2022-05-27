@@ -1,5 +1,6 @@
 import test from 'ava';
 
+import { InvalidDictionaryError } from './exceptions';
 import { Luhn } from './luhn';
 
 test('Generate', (t) => {
@@ -53,4 +54,14 @@ test('you can change the dictionary', (t) => {
   t.not(CustomLuhn.generate('justARandomStringOfLetters123').checksum, 'a');
   t.true(CustomLuhn.validate('justARandomStringOfLettersk').isValid);
   t.false(CustomLuhn.validate('justARandomStringOfLettersa').isValid);
+});
+
+test('should enforce an even length of the dictionary', (t) => {
+  class TestLuhn extends Luhn {
+    static readonly dictionary = 'abc';
+  }
+
+  t.throws(() => TestLuhn.validate('ab'), {
+    instanceOf: InvalidDictionaryError,
+  });
 });
