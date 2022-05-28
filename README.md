@@ -20,7 +20,7 @@ import { generateRandom } from 'some_library';
 
 const createToken = () => {
   const randomString = generateRandom();
-  const checksum = Luhn.generate(randomString);
+  const { checksum } = Luhn.generate(randomString);
   return `${randomString}-${checksum}`;
 };
 ```
