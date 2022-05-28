@@ -70,3 +70,18 @@ Luhn.validate('FoOö5'); // -> {phrase: 'foo5', isValid: true}
 Luhn.validate('FoO-ö5'); // -> {phrase: 'foo5', isValid: true}
 Luhn.validate('bar5'); // -> {phrase: 'bar5', isValid: false}
 ```
+
+## Dictionary
+
+The default dictionary contains a-z and 0-9.
+If you need to support other dictionaries, you can override the default one.
+
+```ts
+class MyLuhn extends Luhn {
+  static dictionary(sensitive: boolean) {
+    return sensitive
+      ? 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZzÅåÄäÖö'
+      : 'abcdefghijklmnopqrstuvwxyzåäö';
+  }
+}
+```
