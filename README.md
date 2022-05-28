@@ -40,7 +40,7 @@ The luhn algorithm allows you to quickly validate an input, without having to lo
 Generating a checksum is simple
 
 ```ts
-const checked = Luhn.generate('foo'); // -> {output: 'foo', checksum: '5'}
+const checked = Luhn.generate('foo'); // -> {phrase: 'foo', checksum: '5'}
 ```
 
 ### Case-insensitive
@@ -48,7 +48,7 @@ const checked = Luhn.generate('foo'); // -> {output: 'foo', checksum: '5'}
 The library defaults to being case insensitive.
 
 ```ts
-const checked = Luhn.generate('FoO'); // -> {output: 'foo', checksum: '5'}
+const checked = Luhn.generate('FoO'); // -> {phrase: 'foo', checksum: '5'}
 ```
 
 ### Filtering
@@ -56,8 +56,8 @@ const checked = Luhn.generate('FoO'); // -> {output: 'foo', checksum: '5'}
 The generate method will filter out any characters not in the dictionary
 
 ```ts
-Luhn.generate('foo-baz'); // -> {output: 'foobaz', checksum: 'p'}
-Luhn.generate('fooö-baz'); // -> {output: 'foobaz', checksum: 'p'}
+Luhn.generate('foo-baz'); // -> {phrase: 'foobaz', checksum: 'p'}
+Luhn.generate('fooö-baz'); // -> {phrase: 'foobaz', checksum: 'p'}
 ```
 
 ## Validate a string
@@ -65,6 +65,8 @@ Luhn.generate('fooö-baz'); // -> {output: 'foobaz', checksum: 'p'}
 Validating a string is also simple
 
 ```ts
-Luhn.validate('foo5'); // -> true
-Luhn.validate('bar5'); // -> false
+Luhn.validate('foo5'); // -> {phrase: 'foo5', isValid: true}
+Luhn.validate('FoOö5'); // -> {phrase: 'foo5', isValid: true}
+Luhn.validate('FoO-ö5'); // -> {phrase: 'foo5', isValid: true}
+Luhn.validate('bar5'); // -> {phrase: 'bar5', isValid: false}
 ```
