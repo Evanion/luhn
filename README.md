@@ -106,10 +106,7 @@ If you need to support other dictionaries, you can override the default one.
 
 ```ts
 class MyLuhn extends Luhn {
-  static dictionary(sensitive: boolean) {
-    return sensitive
-      ? 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZzÅåÄäÖö'
-      : 'abcdefghijklmnopqrstuvwxyzåäö';
-  }
+  static dictionary =
+    'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZzÅåÄäÖö';
 }
 ```
