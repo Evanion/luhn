@@ -3,45 +3,9 @@ version: 2.1
 orbs:
   sonarcloud: sonarsource/sonarcloud@1.1.0
 jobs:
-  node-14:
-    docker:
-      - image: circleci/node:14
-    steps:
-      - checkout
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-      - run: yarn install
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-      - run: yarn test
-      - run: yarn cov:send
-      - run: yarn cov:check
-  node-16:
-    docker:
-      - image: circleci/node:16
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            - v1-dependencies-
-      - run: yarn install
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-      - run: yarn test
-      - run: yarn cov:send
-      - run: yarn cov:check
   node-latest:
     docker:
-      - image: circleci/node:latest
+      - image: cimg/node:lts
     steps:
       - checkout
       - restore_cache:
@@ -61,8 +25,6 @@ jobs:
 workflows:
   build:
     jobs:
-      - node-14
-      - node-16
       - node-latest:
           context:
             - SonarCloud
