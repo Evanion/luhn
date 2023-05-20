@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/Evanion/luhn/compare/v1.0.0...v2.0.0) (2023-05-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* **luhn:** Different checksums will be calculated from previous version.
+
+### Bug Fixes
+
+* **luhn:** correct how dictionary is filtered when in sensitive mode ([9284369](https://github.com/Evanion/luhn/commit/9284369b44c3b87bb55e942a5e13dcdc4f1258ca))
+
 ## 1.0.0 (2022-05-28)
 
 
