@@ -24,11 +24,15 @@ export class Luhn {
    * Dictionary that contains all valid characters.
    * Override it if you want to use additional/less characters
    */
-  static dictionary(sensitive: boolean = this.sensitive): string {
-    return sensitive
-      ? '0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz'
-      : '0123456789abcdefghijklmnopqrstuvwxyz';
-  }
+  static dictionary =
+    '0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz';
+
+  static lowercaseOnly = (dictionary: string) =>
+    dictionary
+      .toLowerCase()
+      .split('')
+      .filter((char, index, arr) => arr.indexOf(char) === index)
+      .join('');
 
   /**
    * Generates a check character for the input string.
@@ -42,7 +46,10 @@ export class Luhn {
    * Luhn.generate('FoO', true) // -> {phrase: 'FoO', checksum: 'n'}
    */
   public static generate(input: string, sensitive?: boolean) {
-    const dictionary = this.dictionary();
+    const dictionary = sensitive
+      ? this.lowercaseOnly(this.dictionary)
+      : this.dictionary;
+
     const n = this.getN(dictionary);
     const filteredArr = (
       sensitive || this.sensitive ? input : input.toLowerCase()
@@ -56,6 +63,7 @@ export class Luhn {
 
     const remainder = sum % n;
     const checkCodePoint = (n - remainder) % n;
+
     return {
       phrase: filteredArr.join(''),
       checksum: this.index2char(checkCodePoint, dictionary),
@@ -76,7 +84,9 @@ export class Luhn {
    * Luhn.validate('FoO5', true) // -> {phrase: 'FoO5', isValid: false}
    */
   public static validate(input: string, sensitive?: boolean) {
-    const dictionary = this.dictionary();
+    const dictionary = sensitive
+      ? this.lowercaseOnly(this.dictionary)
+      : this.dictionary;
     const n = this.getN(dictionary);
     const filteredArr = (
       sensitive || this.sensitive ? input : input.toLowerCase()

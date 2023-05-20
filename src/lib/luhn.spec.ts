@@ -4,18 +4,18 @@ import { InvalidDictionaryError } from './exceptions';
 import { Luhn } from './luhn';
 
 test('Generate', (t) => {
-  t.is(Luhn.generate('justarandomstringofletters').checksum, 'k');
+  t.is(Luhn.generate('justarandomstringofletters').checksum, 'e');
 });
 
 test('Generate filters out characters not in the dictionary', (t) => {
   t.deepEqual(Luhn.generate('just-a-random-string-of-letters'), {
     phrase: 'justarandomstringofletters',
-    checksum: 'k',
+    checksum: 'e',
   });
 });
 
 test('Generate is not case sensitive', (t) => {
-  t.is(Luhn.generate('justARandomStringOfLetters').checksum, 'k');
+  t.is(Luhn.generate('justARandomStringOfLetters').checksum, 'e');
 });
 
 test('Generate can be made case sensitive', (t) => {
@@ -23,11 +23,11 @@ test('Generate can be made case sensitive', (t) => {
 });
 
 test('validate', (t) => {
-  t.true(Luhn.validate('justarandomstringoflettersk').isValid);
+  t.true(Luhn.validate('justarandomstringofletterse').isValid);
 });
 
 test('Validate is not case sensitive', (t) => {
-  t.true(Luhn.validate('JUSTARANDOMSTRINGOFLETTERSK').isValid);
+  t.true(Luhn.validate('JUSTARANDOMSTRINGOFLETTERSe').isValid);
 });
 
 test('Validate can be made case sensitive', (t) => {
@@ -45,13 +45,10 @@ test('you can globally set the class to be case sensitive', (t) => {
 
 test('you can change the dictionary', (t) => {
   class CustomLuhn extends Luhn {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    static dictionary(_sensitive: boolean) {
-      return 'abcdefghijklmnopqrstuvwxyz';
-    }
+    static dictionary = 'abcdefghijklmnopqrstuvwxyz';
   }
 
-  t.is(Luhn.generate('justARandomStringOfLetters123').checksum, 'k');
+  t.is(Luhn.generate('justARandomStringOfLetters123').checksum, 'S');
   t.is(CustomLuhn.generate('justARandomStringOfLetters123').checksum, 'v');
 
   t.true(CustomLuhn.validate('justARandomStringOfLetters123v').isValid);
@@ -60,10 +57,7 @@ test('you can change the dictionary', (t) => {
 
 test('should enforce an even length of the dictionary', (t) => {
   class TestLuhn extends Luhn {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    static dictionary(_sensitive: boolean) {
-      return 'abcfo';
-    }
+    static dictionary = 'abcfo';
   }
 
   t.throws(() => TestLuhn.generate('ab'), {

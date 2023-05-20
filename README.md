@@ -25,6 +25,17 @@ const createToken = () => {
 };
 ```
 
+## installation
+
+```bash
+npm install @evanion/luhn
+yarn add @evanion/luhn
+```
+
+## Breaking changes
+
+_version 1.x.x contains a faulty calculation of how checksums are calculated, please take in to account when upgrading_
+
 ## What is the Luhn and Luhn mod-N Algorithms?
 
 The [Luhn algorithm](https://en.wikipedia.org/wiki/Luhn_algorithm) is a simple checksum formula used to validate identification numbers such as credit card numbers, IMEI numbers, social security/insurance numbers, and National identification numbers in some countries.
@@ -49,6 +60,23 @@ The library defaults to being case insensitive.
 
 ```ts
 const checked = Luhn.generate('FoO'); // -> {phrase: 'foo', checksum: '5'}
+```
+
+### Case-sensitive
+
+If you need to be case sensitive, you can extend the Luhn class and override the `sensitive` property.
+
+```ts
+class SensitiveLuhn extends Luhn {
+  static readonly sensitive = true;
+}
+```
+
+or, you can pass the `sensitive` property to the generate method.
+
+```ts
+Luhn.generate('FoO', true); // -> {phrase: 'FoO', checksum: '5'}
+Luhn.validate('FoO5', true); // -> {phrase: 'FoO5', isValid: true}
 ```
 
 ### Filtering
